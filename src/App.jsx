@@ -1,13 +1,21 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import Blog from './components/blog/Blog'
+
+function MainPage() {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <h1>Welcome to the Blog!</h1>
+    </div>
+  );
+}
 
 function App() {
-
   return (
-    <>
-    <Blog />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
