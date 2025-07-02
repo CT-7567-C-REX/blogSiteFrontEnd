@@ -5,6 +5,7 @@ import MainLayout from '../layouts/MainLayout';
 import CreatePost from '../pages/CreatePost';
 import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
+import AllPosts from '../pages/AllPosts';
 import { Box } from '@mui/material';
 
 const AppRoutes = () => {
@@ -15,6 +16,7 @@ const AppRoutes = () => {
         <Route path="/createPost" element={<CreatePost />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/allPosts" element={<AllPosts />} />
         {/* Add more pages below */}
       </Route>
     </Routes>
