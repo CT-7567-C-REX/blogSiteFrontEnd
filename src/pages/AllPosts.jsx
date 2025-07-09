@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, Typography, Grid, CircularProgress, Alert } from '@mui/material';
-import { allPosts } from '../services/api';
+import { allPosts } from '../services/blogPosts/routes';
 
 function AllPosts() {
     const [posts, setPosts] = useState([]);

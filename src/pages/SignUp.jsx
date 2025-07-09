@@ -1,18 +1,33 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Paper, Typography } from '@mui/material';
+import { Box, TextField, Button, Paper, Typography, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { register } from '../services/authentication/routes';
 
 function SignUp() {
+    const [username, setUsername] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         if (password !== confirmPassword) {
-            setError("Passwords must be the same!");
-        } else {
-            setError('');
-            // Proceed with sign up logic
+            setError('Passwords must be the same!');
+            return;
+        }
+        setLoading(true);
+        try {
+            await register({ username, fullName, email, password, passwordAgain: confirmPassword });
+            navigate('/signin'); // Redirect to sign in after successful registration
+        } catch (err) {
+            setError(err.response?.data?.message || 'Registration failed.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -23,8 +38,9 @@ function SignUp() {
                     Sign Up
                 </Typography>
                 <Box component="form" display="flex" flexDirection="column" gap={2} onSubmit={handleSubmit}>
-                    <TextField label="Name" type="text" fullWidth required />
-                    <TextField label="Email" type="email" fullWidth required />
+                    <TextField label="Username" type="text" fullWidth required value={username} onChange={e => setUsername(e.target.value)} />
+                    <TextField label="Name" type="text" fullWidth required value={fullName} onChange={e => setFullName(e.target.value)} />
+                    <TextField label="Email" type="email" fullWidth required value={email} onChange={e => setEmail(e.target.value)} />
                     <TextField
                         label="Password"
                         type="password"
@@ -43,9 +59,10 @@ function SignUp() {
                         error={!!error}
                         helperText={error}
                     />
-                    <Button type="submit" variant="contained" fullWidth>
-                        Sign Up
+                    <Button type="submit" variant="contained" fullWidth disabled={loading}>
+                        {loading ? 'Signing Up...' : 'Sign Up'}
                     </Button>
+                    {error && <Alert severity="error">{error}</Alert>}
                 </Box>
             </Paper>
         </Box>

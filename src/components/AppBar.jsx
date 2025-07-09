@@ -17,6 +17,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import DarkModeIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightModeRounded";
+import { useNavigate } from 'react-router-dom';
+import { signedIn, removeAccessToken } from '../services/session';
+import { logout } from '../services/authentication/routes';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -36,6 +39,30 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = React.useState(signedIn());
+  const [signingOut, setSigningOut] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleStorage = () => {
+      setIsLoggedIn(signedIn());
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    try {
+      await logout();
+    } catch (e) {
+      // ignore error, always remove token
+    }
+    removeAccessToken();
+    setIsLoggedIn(false);
+    setSigningOut(false);
+    navigate('/signin');
+  };
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -73,13 +100,20 @@ export default function AppAppBar() {
               alignItems: "center",
             }}
           >
-            <Button color="primary" variant="text" size="small">
-              Sign in
-            </Button>
-            <Button color="primary" variant="contained" size="small">
-              Sign up
-            </Button>
-
+            {isLoggedIn ? (
+              <>
+                <Button color="primary" variant="contained" size="small" onClick={() => navigate('/profile')}>
+                  Profile
+                </Button>
+                <Button color="secondary" variant="outlined" size="small" onClick={handleSignOut} disabled={signingOut}>
+                  {signingOut ? 'Signing Out...' : 'Sign Out'}
+                </Button>
+              </>
+            ) : (
+              <Button color="primary" variant="text" size="small" onClick={() => navigate('/signin')}>
+                Sign in
+              </Button>
+            )}
             <IconButton
               onClick={toggleColorMode}
               sx={{ color: mode === "light" ? "#000" : "#fff" }}
@@ -125,16 +159,26 @@ export default function AppAppBar() {
                 <MenuItem>FAQ</MenuItem>
                 <MenuItem>Blog</MenuItem>
                 <Divider sx={{ my: 3 }} />
-                <MenuItem>
-                  <Button color="primary" variant="contained" fullWidth>
-                    Sign up
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <Button color="primary" variant="outlined" fullWidth>
-                    Sign in
-                  </Button>
-                </MenuItem>
+                {isLoggedIn ? (
+                  <>
+                    <MenuItem>
+                      <Button color="primary" variant="contained" fullWidth onClick={() => { setOpen(false); navigate('/profile'); }}>
+                        Profile
+                      </Button>
+                    </MenuItem>
+                    <MenuItem>
+                      <Button color="secondary" variant="outlined" fullWidth onClick={() => { setOpen(false); handleSignOut(); }} disabled={signingOut}>
+                        {signingOut ? 'Signing Out...' : 'Sign Out'}
+                      </Button>
+                    </MenuItem>
+                  </>
+                ) : (
+                  <MenuItem>
+                    <Button color="primary" variant="outlined" fullWidth onClick={() => { setOpen(false); navigate('/signin'); }}>
+                      Sign in
+                    </Button>
+                  </MenuItem>
+                )}
               </Box>
             </Drawer>
           </Box>

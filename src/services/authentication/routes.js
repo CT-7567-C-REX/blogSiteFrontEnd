@@ -1,0 +1,28 @@
+import api from '../api';
+
+// Register a new user
+export const register = async ({ username, fullName, email, password, passwordAgain }) => {
+  const response = await api.post('/auth/register', {
+    username,
+    fullName,
+    email,
+    password,
+    passwordAgain,
+  });
+  return response.data;
+};
+
+// Login user
+export const login = async ({ emailOrUsername, password }) => {
+  const response = await api.post('/auth/login', {
+    emailOrUsername,
+    password,
+  });
+  return response.data;
+};
+
+// Logout user
+export const logout = async () => {
+  const response = await api.post('/auth/logout');
+  return response.data;
+};

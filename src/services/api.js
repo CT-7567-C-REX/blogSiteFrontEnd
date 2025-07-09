@@ -1,13 +1,26 @@
 import axios from 'axios';
+import { accessToken, setAccessToken } from './session';
+import { API_BASE_URL } from '../config';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5000',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': `Bearer ${accessToken()}`
   },
 });
 
-export const createPost = (data) => api.post('/api/createPost', data);
-export const signUp = (data) => api.post('/api/signup', data);
-export const signIn = (data) => api.post('/api/signin', data);
-export const allPosts = () => api.get('/api/allPosts'); 
+// Add a response interceptor to store access token if present in response
+api.interceptors.response.use(
+  (response) => {
+    const token = response.data?.accessToken || response.data?.token || response.data?.access_token;
+    if (token) {
+      setAccessToken(token);
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
+export default api;
+
