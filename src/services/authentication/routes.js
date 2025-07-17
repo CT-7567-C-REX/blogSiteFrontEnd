@@ -1,4 +1,5 @@
 import api from '../api';
+import { refreshToken, } from '../session';
 
 // Register a new user
 export const register = async ({ username, fullName, email, password, passwordAgain }) => {
@@ -23,6 +24,9 @@ export const login = async ({ emailOrUsername, password }) => {
 
 // Logout user
 export const logout = async () => {
-  const response = await api.post('/auth/logout');
+  const response = await api.post('/auth/logout', {
+    refresh_token: refreshToken(),
+  });
   return response.data;
 };
+
