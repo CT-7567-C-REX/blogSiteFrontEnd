@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import client from 'services/axios'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -67,6 +68,15 @@ export default function LoginPage() {
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        <div className="mt-4 text-center">
+          <span className="text-sm text-gray-600">Don't have an account?</span>
+          <Link
+            href="/register"
+            className="ml-2 inline-block rounded border border-primary-500 px-4 py-2 font-semibold text-primary-600 hover:bg-primary-50"
+          >
+            Register
+          </Link>
+        </div>
       </form>
     </div>
   )
