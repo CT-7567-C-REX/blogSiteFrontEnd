@@ -1,9 +1,9 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'Next.js Starter Blog',
-  author: 'Tails Azimuth',
-  headerTitle: 'TailwindBlog',
-  description: 'A blog created with Next.js and Tailwind.css',
+  title: 'Yasir Reis',
+  author: 'Yasir Reis',
+  headerTitle: 'Yasir Reis',
+  description: 'Yasir Reis Blog',
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://tailwind-nextjs-starter-blog.vercel.app',
@@ -24,7 +24,7 @@ const siteMetadata = {
   bluesky: 'https://bsky.app/',
   locale: 'en-US',
   // set to true if you want a navbar fixed to the top
-  stickyNav: true,
+  stickyNav: false,
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.

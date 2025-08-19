@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import client from 'services/axios'
+import { login as loginRequest } from 'services/auth/routes'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -18,17 +18,8 @@ export default function LoginPage() {
     setError('')
 
     try {
-      const res = await client.post('/auth/login', {
-        emailOrUsername,
-        password,
-      })
-
-      const { access_token, refresh_token } = res.data
-
-      localStorage.setItem('access_token', access_token)
-      localStorage.setItem('refresh_token', refresh_token)
-
-      router.push('/')
+      const success = await loginRequest(emailOrUsername, password)
+      if (success) router.push('/')
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed')
     } finally {

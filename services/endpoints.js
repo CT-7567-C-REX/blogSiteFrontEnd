@@ -4,6 +4,11 @@ const endpoints = {
     login : `${API_BASE_URL}/auth/login`,
     logout: `${API_BASE_URL}/auth/logout`,
     register: `${API_BASE_URL}/auth/register`,
+    userProfile: `${API_BASE_URL}/users/profile`,
+    userProfileByUsername: (username) => `${API_BASE_URL}/users/profile/${username}`,
+    blogPostsCreate: `${API_BASE_URL}/blogPosts/create`,
+    blogPostsAll: `${API_BASE_URL}/blogPosts/allPosts`,
+    blogPostBySlug: (slug) => `${API_BASE_URL}/blogPosts/slug/${slug}`,
     deactivateAccount: (token) => `${API_BASE_URL}/auth/deactivate/${token}`,
 }
 

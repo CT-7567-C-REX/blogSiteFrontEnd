@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import client from 'services/axios'
+import { register as registerRequest } from 'services/auth/routes'
 import Link from 'next/link'
 
 export default function RegisterPage() {
   const router = useRouter()
   const [username, setUsername] = useState('')
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -26,17 +27,8 @@ export default function RegisterPage() {
     }
 
     try {
-      const res = await client.post('/auth/register', {
-        username,
-        email,
-        password,
-      })
-
-      const { access_token, refresh_token } = res.data || {}
-
-      if (access_token && refresh_token) {
-        localStorage.setItem('access_token', access_token)
-        localStorage.setItem('refresh_token', refresh_token)
+      const success = await registerRequest(fullName, username, email, password, confirmPassword)
+      if (success) {
         router.push('/')
       } else {
         router.push('/login')
@@ -53,6 +45,16 @@ export default function RegisterPage() {
       <h1 className="mb-6 text-2xl font-bold text-center">Register</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="text-red-500">{error}</div>}
+        <div>
+          <label className="block mb-1 font-medium">Full Name</label>
+          <input
+            type="text"
+            className="w-full rounded border border-gray-300 px-3 py-2"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+          />
+        </div>
         <div>
           <label className="block mb-1 font-medium">Username</label>
           <input
