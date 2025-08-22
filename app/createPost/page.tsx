@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createPost } from 'services/blog/routes'
+import TiptapEditorWrapper from '@/components/TiptapEditorWrapper'
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -84,12 +85,11 @@ export default function CreatePostPage() {
 
         <div>
           <label className="mb-1 block text-sm font-medium">Content *</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="h-56 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-            placeholder="Write your content..."
-            required
+          <TiptapEditorWrapper
+            content={content}
+            onChange={setContent}
+            placeholder="Write your blog post content..."
+            className="w-full"
           />
         </div>
 
