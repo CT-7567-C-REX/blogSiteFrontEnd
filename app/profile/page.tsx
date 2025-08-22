@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { getProfile } from 'services/user/routes'
 import Link from 'next/link'
+import ClickableProfilePicture from '@/components/ClickableProfilePicture'
+import ProfilePictureModal from '@/components/ProfilePictureModal'
 
 type Profile = {
   id: string
@@ -29,6 +31,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string>('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   useEffect(() => {
     const run = async () => {
@@ -51,20 +54,12 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto mt-10 max-w-3xl px-4">
       <div className="flex items-center gap-4">
-        {profile.profile_image_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={profile.profile_image_url}
-            alt={profile.username}
-            className="h-16 w-16 rounded-full object-cover"
-          />
-        ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-8 w-8">
-              <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
-            </svg>
-          </div>
-        )}
+        <ClickableProfilePicture
+          imageUrl={profile.profile_image_url}
+          username={profile.username}
+          size="md"
+          onClick={() => setIsModalOpen(true)}
+        />
         <div>
           <h1 className="text-2xl font-bold">{profile.fullName}</h1>
           <p className="text-gray-600 dark:text-gray-300">@{profile.username}</p>
@@ -79,6 +74,27 @@ export default function ProfilePage() {
         <Stat label="Blocked" value={profile.blocked_users_count} />
         <Stat label="Saved" value={profile.saved_posts_count} />
       </div>
+
+      {/* Profile Picture Modal */}
+      <ProfilePictureModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        currentImageUrl={profile.profile_image_url}
+        onImageUpdate={() => {
+          // Refresh the profile data to get the updated image URL
+          const refreshProfile = async () => {
+            try {
+              const updatedProfile = await getProfile()
+              setProfile(updatedProfile)
+            } catch (err: any) {
+              console.error('Failed to refresh profile:', err)
+            }
+          }
+          refreshProfile()
+          // Close modal after successful update
+          setIsModalOpen(false)
+        }}
+      />
 
       <div className="mt-8 space-y-2">
         <div className="text-sm text-gray-500 dark:text-gray-400">Email</div>

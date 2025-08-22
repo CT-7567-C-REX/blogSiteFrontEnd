@@ -6,6 +6,7 @@ const endpoints = {
     register: `${API_BASE_URL}/auth/register`,
     userProfile: `${API_BASE_URL}/users/profile`,
     userProfileByUsername: (username) => `${API_BASE_URL}/users/profile/${username}`,
+    updateProfilePicture: `${API_BASE_URL}/users/updateProfilePic`,
     blogPostsCreate: `${API_BASE_URL}/blogPosts/create`,
     blogPostsAll: `${API_BASE_URL}/blogPosts/allPosts`,
     blogPostBySlug: (slug) => `${API_BASE_URL}/blogPosts/slug/${slug}`,
