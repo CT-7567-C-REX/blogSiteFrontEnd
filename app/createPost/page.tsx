@@ -88,7 +88,7 @@ export default function CreatePostPage() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             className="h-56 w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-            placeholder="Write your content..."
+            placeholder="Write your contents..."
             required
           />
         </div>
