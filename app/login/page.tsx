@@ -29,11 +29,11 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto mt-10 max-w-md px-4">
-      <h1 className="mb-6 text-2xl font-bold text-center">Login</h1>
+      <h1 className="mb-6 text-center text-2xl font-bold">Login</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="text-red-500">{error}</div>}
         <div>
-          <label className="block mb-1 font-medium">Email or Username</label>
+          <label className="mb-1 block font-medium">Email or Username</label>
           <input
             type="text"
             className="w-full rounded border border-gray-300 px-3 py-2"
@@ -43,7 +43,7 @@ export default function LoginPage() {
           />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Password</label>
+          <label className="mb-1 block font-medium">Password</label>
           <input
             type="password"
             className="w-full rounded border border-gray-300 px-3 py-2"
@@ -55,7 +55,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded bg-primary-500 px-4 py-2 font-semibold text-white hover:bg-primary-600"
+          className="bg-primary-500 hover:bg-primary-600 w-full rounded px-4 py-2 font-semibold text-white"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
@@ -63,7 +63,7 @@ export default function LoginPage() {
           <span className="text-sm text-gray-600">Don't have an account?</span>
           <Link
             href="/register"
-            className="ml-2 inline-block rounded border border-primary-500 px-4 py-2 font-semibold text-primary-600 hover:bg-primary-50"
+            className="border-primary-500 text-primary-600 hover:bg-primary-50 ml-2 inline-block rounded border px-4 py-2 font-semibold"
           >
             Register
           </Link>

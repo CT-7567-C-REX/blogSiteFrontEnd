@@ -92,7 +92,7 @@ const Header = () => {
         {isAuthenticated && (
           <Link
             href="/createPost"
-            className="hidden rounded bg-primary-500 px-3 py-1 text-sm font-medium text-white hover:bg-primary-600 sm:inline-block"
+            className="bg-primary-500 hover:bg-primary-600 hidden rounded px-3 py-1 text-sm font-medium text-white sm:inline-block"
           >
             Create
           </Link>
@@ -101,7 +101,7 @@ const Header = () => {
         {!isAuthenticated && (
           <Link
             href="/login"
-            className="rounded px-3 py-1 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary-500 dark:hover:text-primary-400 border border-gray-300 dark:border-gray-700"
+            className="hover:text-primary-500 dark:hover:text-primary-400 rounded border border-gray-300 px-3 py-1 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-200"
           >
             Login
           </Link>

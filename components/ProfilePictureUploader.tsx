@@ -14,7 +14,7 @@ interface ProfilePictureUploaderProps {
 export default function ProfilePictureUploader({
   currentImageUrl,
   onImageUpdate,
-  className = ''
+  className = '',
 }: ProfilePictureUploaderProps) {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
@@ -43,12 +43,12 @@ export default function ProfilePictureUploader({
 
     try {
       const response = await updateProfilePicture(selectedImage)
-      
+
       // Backend returns success message, we need to refresh the profile to get the new image URL
       // The profile will be updated on the backend, so we can just show success
       setSuccess(true)
       setSelectedImage(null)
-      
+
       // Refresh the profile data to get the new image URL
       // This will trigger a re-render with the updated profile image
       if (onImageUpdate) {
@@ -56,10 +56,9 @@ export default function ProfilePictureUploader({
         // The parent component should refresh the profile data
         onImageUpdate('')
       }
-      
+
       // Reset success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
-      
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to upload profile picture')
     } finally {
@@ -76,17 +75,16 @@ export default function ProfilePictureUploader({
 
     try {
       await removeProfilePicture()
-      
+
       setSuccess(true)
-      
+
       // Refresh the profile data to reflect the removed image
       if (onImageUpdate) {
         onImageUpdate('')
       }
-      
+
       // Reset success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000)
-      
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Failed to remove profile picture')
     } finally {
@@ -102,7 +100,7 @@ export default function ProfilePictureUploader({
           <button
             onClick={handleRemove}
             disabled={removing}
-            className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {removing ? 'Removing...' : 'Remove Profile Picture'}
           </button>
@@ -124,15 +122,13 @@ export default function ProfilePictureUploader({
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className="w-full bg-primary-600 text-white py-2 px-4 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="bg-primary-600 hover:bg-primary-700 w-full rounded-md px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {uploading ? 'Uploading...' : 'Upload Profile Picture'}
           </button>
-          
-          {error && (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          )}
-          
+
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
           {success && (
             <p className="text-sm text-green-600 dark:text-green-400">
               Profile picture updated successfully!

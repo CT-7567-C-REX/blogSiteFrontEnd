@@ -134,7 +134,9 @@ export default function ProfilePage() {
                     {post.title}
                   </Link>
                   {post.created_at && (
-                    <div className="text-xs text-gray-500">{new Date(post.created_at).toLocaleString()}</div>
+                    <div className="text-xs text-gray-500">
+                      {new Date(post.created_at).toLocaleString()}
+                    </div>
                   )}
                 </div>
                 <Link
@@ -155,7 +157,9 @@ export default function ProfilePage() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded border border-gray-200 p-3 text-center dark:border-gray-700">
-      <div className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{label}</div>
+      <div className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
+        {label}
+      </div>
       <div className="text-lg font-semibold">{value}</div>
     </div>
   )
@@ -171,5 +175,3 @@ type Post = {
   user_id?: string
   author?: { id: string; username: string }
 }
-
-

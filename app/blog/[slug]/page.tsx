@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
@@ -68,15 +68,18 @@ export default function BlogPostPage() {
       </div>
       {post.author?.username && (
         <p className="mb-4 text-sm text-gray-600">
-          by <Link href={`/profile/${post.author.username}`} className="hover:underline">{post.author.username}</Link>
+          by{' '}
+          <Link href={`/profile/${post.author.username}`} className="hover:underline">
+            {post.author.username}
+          </Link>
         </p>
       )}
       {post.created_at && (
-        <p className="mb-6 text-xs text-gray-500">Published: {new Date(post.created_at).toLocaleString()}</p>
+        <p className="mb-6 text-xs text-gray-500">
+          Published: {new Date(post.created_at).toLocaleString()}
+        </p>
       )}
       <div className="prose max-w-none whitespace-pre-wrap">{post.content}</div>
     </article>
   )
 }
-
-

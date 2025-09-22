@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createPost } from 'services/blog/routes'
-import TiptapEditorWrapper from '@/components/TiptapEditorWrapper'
+import Editor from '@/components/Editor'
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -52,13 +52,26 @@ export default function CreatePostPage() {
         const slug = created?.slug || created?.post?.slug
         if (slug) router.push(`/blog/${slug}`)
         else router.push('/allPosts')
-      } catch (err: any) {
-        setError(err?.response?.data?.message || 'Failed to create post')
+      } catch (err: unknown) {
+        setError(
+          (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+            'Failed to create post'
+        )
       } finally {
         setSubmitting(false)
       }
     },
-    [title, content, metaDescription, keywords, featuredImage, featuredImageAlt, contentImages, tags, router]
+    [
+      title,
+      content,
+      metaDescription,
+      keywords,
+      featuredImage,
+      featuredImageAlt,
+      contentImages,
+      tags,
+      router,
+    ]
   )
 
   return (
@@ -72,8 +85,11 @@ export default function CreatePostPage() {
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Title *</label>
+          <label htmlFor="title" className="mb-1 block text-sm font-medium">
+            Title *
+          </label>
           <input
+            id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -84,18 +100,27 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Content *</label>
-          <TiptapEditorWrapper
-            content={content}
-            onChange={setContent}
+          <label htmlFor="content" className="mb-1 block text-sm font-medium">
+            Content *
+          </label>
+          <Editor />
+          {/* <textarea
+            id="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
             placeholder="Write your blog post content..."
-            className="w-full"
-          />
+            rows={15}
+            required
+          /> */}
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Meta Description</label>
+          <label htmlFor="metaDescription" className="mb-1 block text-sm font-medium">
+            Meta Description
+          </label>
           <input
+            id="metaDescription"
             type="text"
             value={metaDescription}
             onChange={(e) => setMetaDescription(e.target.value)}
@@ -105,8 +130,11 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Keywords</label>
+          <label htmlFor="keywords" className="mb-1 block text-sm font-medium">
+            Keywords
+          </label>
           <input
+            id="keywords"
             type="text"
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
@@ -116,8 +144,11 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Featured Image</label>
+          <label htmlFor="featuredImage" className="mb-1 block text-sm font-medium">
+            Featured Image
+          </label>
           <input
+            id="featuredImage"
             type="file"
             accept="image/*"
             onChange={(e) => setFeaturedImage(e.target.files?.[0] ?? null)}
@@ -126,8 +157,11 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Featured Image Alt Text</label>
+          <label htmlFor="featuredImageAlt" className="mb-1 block text-sm font-medium">
+            Featured Image Alt Text
+          </label>
           <input
+            id="featuredImageAlt"
             type="text"
             value={featuredImageAlt}
             onChange={(e) => setFeaturedImageAlt(e.target.value)}
@@ -137,8 +171,11 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Content Images</label>
+          <label htmlFor="contentImages" className="mb-1 block text-sm font-medium">
+            Content Images
+          </label>
           <input
+            id="contentImages"
             type="file"
             accept="image/*"
             multiple
@@ -148,8 +185,11 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Tags</label>
+          <label htmlFor="tags" className="mb-1 block text-sm font-medium">
+            Tags
+          </label>
           <input
+            id="tags"
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
@@ -178,5 +218,3 @@ export default function CreatePostPage() {
     </div>
   )
 }
-
-

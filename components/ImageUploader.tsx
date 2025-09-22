@@ -23,44 +23,53 @@ export default function ImageUploader({
   maxSize = 5, // 5MB default
   className = '',
   label = 'Upload Image',
-  placeholder = 'Click to select or drag and drop an image'
+  placeholder = 'Click to select or drag and drop an image',
 }: ImageUploaderProps) {
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const validateFile = useCallback((file: File): string | null => {
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      return 'Please select a valid image file'
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        return 'Please select a valid image file'
+      }
 
-    // Check file size
-    if (file.size > maxSize * 1024 * 1024) {
-      return `File size must be less than ${maxSize}MB`
-    }
+      // Check file size
+      if (file.size > maxSize * 1024 * 1024) {
+        return `File size must be less than ${maxSize}MB`
+      }
 
-    return null
-  }, [maxSize])
+      return null
+    },
+    [maxSize]
+  )
 
-  const handleFileSelect = useCallback((file: File) => {
-    setError(null)
-    
-    const validationError = validateFile(file)
-    if (validationError) {
-      setError(validationError)
-      return
-    }
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      setError(null)
 
-    onImageSelect(file)
-  }, [validateFile, onImageSelect])
+      const validationError = validateFile(file)
+      if (validationError) {
+        setError(validationError)
+        return
+      }
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      handleFileSelect(file)
-    }
-  }, [handleFileSelect])
+      onImageSelect(file)
+    },
+    [validateFile, onImageSelect]
+  )
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (file) {
+        handleFileSelect(file)
+      }
+    },
+    [handleFileSelect]
+  )
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -72,16 +81,19 @@ export default function ImageUploader({
     }
   }, [])
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setDragActive(false)
 
-    const file = e.dataTransfer.files?.[0]
-    if (file) {
-      handleFileSelect(file)
-    }
-  }, [handleFileSelect])
+      const file = e.dataTransfer.files?.[0]
+      if (file) {
+        handleFileSelect(file)
+      }
+    },
+    [handleFileSelect]
+  )
 
   const handleClick = useCallback(() => {
     fileInputRef.current?.click()
@@ -108,10 +120,10 @@ export default function ImageUploader({
       )}
 
       <div
-        className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+        className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
           dragActive
             ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+            : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -146,11 +158,11 @@ export default function ImageUploader({
               <button
                 type="button"
                 onClick={handleClick}
-                className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
               >
                 Click to upload
-              </button>
-              {' '}or drag and drop
+              </button>{' '}
+              or drag and drop
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400">
               PNG, JPG, GIF up to {maxSize}MB
@@ -162,16 +174,21 @@ export default function ImageUploader({
               <img
                 src={displayPreview}
                 alt="Preview"
-                className="h-32 w-32 rounded-lg object-cover mx-auto"
+                className="mx-auto h-32 w-32 rounded-lg object-cover"
               />
               <button
                 type="button"
                 onClick={handleRemove}
-                className="absolute -top-2 -right-2 inline-flex items-center justify-center w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                className="absolute -top-2 -right-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
                 title="Remove image"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -179,7 +196,7 @@ export default function ImageUploader({
               <button
                 type="button"
                 onClick={handleClick}
-                className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300"
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
               >
                 Change image
               </button>
@@ -188,9 +205,7 @@ export default function ImageUploader({
         )}
       </div>
 
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {selectedImage && (
         <div className="text-xs text-gray-500 dark:text-gray-400">
