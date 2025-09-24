@@ -24,6 +24,7 @@ type Profile = {
   comments_count?: number
   blocked_users_count?: number | null
   saved_posts_count?: number | null
+  is_own_profile?: boolean
 }
 
 export default function PublicProfilePage() {
@@ -81,7 +82,7 @@ export default function PublicProfilePage() {
 
   return (
     <div className="mx-auto mt-10 max-w-3xl px-4">
-      <div className="mb-6 flex items-center gap-4">
+      <div className="mb-6 flex items-center justify-between gap-4">
         {profile.profile_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -101,10 +102,18 @@ export default function PublicProfilePage() {
             </svg>
           </div>
         )}
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold">{profile.fullName}</h1>
           <p className="text-gray-600 dark:text-gray-300">@{profile.username}</p>
         </div>
+        {profile.is_own_profile && (
+          <Link
+            href={`/profile/${profile.username}/edit`}
+            className="rounded-md border px-3 py-1 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            Edit Profile
+          </Link>
+        )}
       </div>
 
       <div className="mt-10">
