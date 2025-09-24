@@ -18,11 +18,6 @@ export async function createPost(params) {
   const {
     title,
     content,
-    meta_description,
-    keywords,
-    featured_image,
-    featured_image_alt_text,
-    content_images,
     tags,
   } = params || {}
 

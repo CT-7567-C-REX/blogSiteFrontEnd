@@ -10,11 +10,6 @@ export default function CreatePostPage() {
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [metaDescription, setMetaDescription] = useState('')
-  const [keywords, setKeywords] = useState('')
-  const [featuredImage, setFeaturedImage] = useState(null as File | null)
-  const [featuredImageAlt, setFeaturedImageAlt] = useState('')
-  const [contentImages, setContentImages] = useState([] as File[])
   const [tagsInput, setTagsInput] = useState('')
 
   const [submitting, setSubmitting] = useState(false)
@@ -42,11 +37,6 @@ export default function CreatePostPage() {
         const created = await createPost({
           title,
           content,
-          meta_description: metaDescription,
-          keywords,
-          featured_image: featuredImage ?? undefined,
-          featured_image_alt_text: featuredImageAlt,
-          content_images: contentImages,
           tags,
         })
         const slug = created?.slug || created?.post?.slug
@@ -64,11 +54,6 @@ export default function CreatePostPage() {
     [
       title,
       content,
-      metaDescription,
-      keywords,
-      featuredImage,
-      featuredImageAlt,
-      contentImages,
       tags,
       router,
     ]
@@ -103,84 +88,10 @@ export default function CreatePostPage() {
           <label htmlFor="content" className="mb-1 block text-sm font-medium">
             Content *
           </label>
-          <Editor />
-          {/* <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+          <Editor
+            content={content}
+            onChange={setContent}
             placeholder="Write your blog post content..."
-            rows={15}
-            required
-          /> */}
-        </div>
-
-        <div>
-          <label htmlFor="metaDescription" className="mb-1 block text-sm font-medium">
-            Meta Description
-          </label>
-          <input
-            id="metaDescription"
-            type="text"
-            value={metaDescription}
-            onChange={(e) => setMetaDescription(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-            placeholder="Short description for SEO"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="keywords" className="mb-1 block text-sm font-medium">
-            Keywords
-          </label>
-          <input
-            id="keywords"
-            type="text"
-            value={keywords}
-            onChange={(e) => setKeywords(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-            placeholder="Comma separated keywords"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="featuredImage" className="mb-1 block text-sm font-medium">
-            Featured Image
-          </label>
-          <input
-            id="featuredImage"
-            type="file"
-            accept="image/*"
-            onChange={(e) => setFeaturedImage(e.target.files?.[0] ?? null)}
-            className="w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="featuredImageAlt" className="mb-1 block text-sm font-medium">
-            Featured Image Alt Text
-          </label>
-          <input
-            id="featuredImageAlt"
-            type="text"
-            value={featuredImageAlt}
-            onChange={(e) => setFeaturedImageAlt(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-            placeholder="Describe the featured image"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="contentImages" className="mb-1 block text-sm font-medium">
-            Content Images
-          </label>
-          <input
-            id="contentImages"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => setContentImages(Array.from(e.target.files ?? []))}
-            className="w-full"
           />
         </div>
 
