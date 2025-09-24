@@ -13,6 +13,9 @@ type Post = {
   created_at?: string
   updated_at?: string
   author?: { id: string; username: string }
+  featured_image_url?: string
+  featured_image_alt_text?: string
+  is_owner?: boolean
 }
 
 export default function BlogPostPage() {
@@ -60,26 +63,41 @@ export default function BlogPostPage() {
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-6 flex items-center justify-between">
+      {post.featured_image_url && (
+        <img
+          src={post.featured_image_url}
+          alt={post.featured_image_alt_text || post.title}
+          className="mb-6 h-64 w-full rounded-lg object-cover"
+        />
+      )}
+      <div className="mb-6 flex items-center justify-between gap-3">
         <h1 className="text-3xl font-bold">{post.title}</h1>
-        <Link href="/allPosts" className="text-blue-600 hover:underline">
-          All posts
-        </Link>
+        {post.is_owner && (
+          <Link
+            href={`/editPost/${post.id}?slug=${encodeURIComponent(post.slug)}`}
+            className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
+          >
+            Edit
+          </Link>
+        )}
       </div>
+      {post.created_at && (
+        <p className="mb-6 text-xs text-gray-500">
+          Published: {new Date(post.created_at).toLocaleString()}
+        </p>
+      )}
+      <div
+        className="prose max-w-none"
+        dangerouslySetInnerHTML={{ __html: post.content || '' }}
+      />
       {post.author?.username && (
-        <p className="mb-4 text-sm text-gray-600">
+        <p className="mt-8 text-sm text-gray-600">
           by{' '}
           <Link href={`/profile/${post.author.username}`} className="hover:underline">
             {post.author.username}
           </Link>
         </p>
       )}
-      {post.created_at && (
-        <p className="mb-6 text-xs text-gray-500">
-          Published: {new Date(post.created_at).toLocaleString()}
-        </p>
-      )}
-      <div className="prose max-w-none whitespace-pre-wrap">{post.content}</div>
     </article>
   )
 }

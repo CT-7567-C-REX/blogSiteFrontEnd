@@ -1,21 +1,25 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createPost } from 'services/blog/routes'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Editor from '@/components/Editor'
 import ImageUploader from '@/components/ImageUploader'
+import { getPostBySlug, updatePost } from 'services/blog/routes'
 
-export default function CreatePostPage() {
+export default function EditPostPage() {
   const router = useRouter()
+  const params = useParams() as { id: string }
+  const searchParams = useSearchParams()
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tagsInput, setTagsInput] = useState('')
   const [featuredImage, setFeaturedImage] = useState<File | null>(null)
   const [featuredImageAlt, setFeaturedImageAlt] = useState('')
+  const [featuredPreviewUrl, setFeaturedPreviewUrl] = useState<string | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const tags = useMemo(
@@ -27,29 +31,32 @@ export default function CreatePostPage() {
     [tagsInput]
   )
 
-  const fillWithMockData = useCallback(() => {
-    setTitle('Kediler: Evimizin Zarif Dostları')
-    setContent(
-      `
-      <h2>Kediler Hakkında</h2>
-      <p>Kediler binlerce yıldır insanlarla birlikte yaşayan, bağımsız ama bir o kadar da sevgi dolu canlılardır. Sessiz adımları, meraklı bakışları ve oyuncu tavırlarıyla hayatımıza neşe katarlar.</p>
-      <h3>Bakım İpuçları</h3>
-      <ul>
-        <li>Dengeli bir beslenme düzeni oluşturun.</li>
-        <li>Temiz suyu her zaman erişilebilir kılın.</li>
-        <li>Düzenli tarama ve tırnak bakımı yapın.</li>
-        <li>Kum kabını temiz tutun.</li>
-      </ul>
-      <p>Kedinizle oyun oynamak, onun hem fiziksel hem de zihinsel sağlığı için çok önemlidir. Basit bir tüy oyuncak bile saatlerce eğlence sağlayabilir.</p>
-      <blockquote>"Kediler asla sıradan değildir; her biri ayrı bir karaktere sahiptir."</blockquote>
-      <p>Yeni bir kedi sahiplenecekseniz sabırlı olun ve onun yeni ortamına alışması için zaman tanıyın.</p>
-      `
-    )
-    setTagsInput('kediler, evcil hayvanlar, bakım')
-    if (featuredImage == null) {
-      setFeaturedImageAlt('Pencere kenarında oturan meraklı bir kedi')
+  useEffect(() => {
+    if (!params?.id) return
+    let mounted = true
+    ;(async () => {
+      try {
+        const slug = searchParams?.get('slug') || params.id
+        const data = await getPostBySlug(slug)
+        if (!mounted) return
+        const p: any = data?.post || data
+        setTitle(p.title || '')
+        setContent(p.content || '')
+        setFeaturedPreviewUrl(p.featured_image_url || null)
+        setFeaturedImageAlt(p.featured_image_alt_text || '')
+        const tagNames = Array.isArray(p.tags) ? p.tags.map((t: any) => t?.name).filter(Boolean) : []
+        setTagsInput(tagNames.join(', '))
+      } catch (err: any) {
+        if (!mounted) return
+        setError(err?.response?.data?.message || 'Failed to load post')
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+    return () => {
+      mounted = false
     }
-  }, [featuredImage])
+  }, [params?.id, searchParams])
 
   const onSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,36 +68,33 @@ export default function CreatePostPage() {
       }
       setSubmitting(true)
       try {
-        const created = await createPost({
+        const updated = await updatePost({
+          post_id: params.id,
           title,
           content,
           tags,
           featured_image: featuredImage || undefined,
           featured_image_alt_text: featuredImageAlt || undefined,
         })
-        const slug = created?.slug || created?.post?.slug
-        if (slug) router.push(`/blog/${slug}`)
-        else router.push('/allPosts')
+        const slug = updated?.slug || updated?.post?.slug || params.id
+        router.push(`/blog/${slug}`)
       } catch (err: unknown) {
         setError(
           (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-            'Failed to create post'
+            'Failed to update post'
         )
       } finally {
         setSubmitting(false)
       }
     },
-    [
-      title,
-      content,
-      tags,
-      router,
-    ]
+    [params.id, title, content, tags, featuredImage, featuredImageAlt, router]
   )
+
+  if (loading) return <div className="mx-auto max-w-3xl px-4 py-8">Loading…</div>
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-3xl font-bold">Create Post</h1>
+      <h1 className="mb-6 text-3xl font-bold">Edit Post</h1>
       <form onSubmit={onSubmit} className="space-y-6">
         {error && (
           <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
@@ -99,14 +103,35 @@ export default function CreatePostPage() {
         )}
 
         <div>
-        <button
-            type="button"
-            onClick={fillWithMockData}
-            className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
-            title="Mock data ile doldur"
-          >
-            Mock data ekle (kediler)
-          </button>
+          <label className="mb-1 block text-sm font-medium">Featured image</label>
+          <ImageUploader
+            selectedImage={featuredImage}
+            previewUrl={featuredPreviewUrl}
+            onImageSelect={(file) => setFeaturedImage(file)}
+            onImageRemove={() => {
+              setFeaturedImage(null)
+              setFeaturedPreviewUrl(null)
+            }}
+            label=""
+            accept="image/*"
+            maxSize={8}
+          />
+          <div className="mt-3">
+            <label htmlFor="featured-alt" className="mb-1 block text-sm font-medium">
+              Featured image alt text
+            </label>
+            <input
+              id="featured-alt"
+              type="text"
+              value={featuredImageAlt}
+              onChange={(e) => setFeaturedImageAlt(e.target.value)}
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+              placeholder="Describe the featured image for accessibility"
+            />
+          </div>
+        </div>
+
+        <div>
           <label htmlFor="title" className="mb-1 block text-sm font-medium">
             Title *
           </label>
@@ -122,43 +147,10 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium">
-            Featured image
-          </label>
-          <ImageUploader
-            selectedImage={featuredImage}
-            onImageSelect={(file) => setFeaturedImage(file)}
-            onImageRemove={() => setFeaturedImage(null)}
-            label=""
-            className=""
-            accept="image/*"
-            maxSize={8}
-          />
-          <div className="mt-3">
-            <label htmlFor="featured-alt" className="mb-1 block text-sm font-medium">
-              Featured image alt text
-            </label>
-            <input
-              id="featured-alt"
-              type="text"
-              value={featuredImageAlt}
-              onChange={(e) => setFeaturedImageAlt(e.target.value)}
-              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-              placeholder="Describe the featured image for accessibility"
-              disabled={!featuredImage}
-            />
-          </div>
-        </div>
-
-        <div>
           <label htmlFor="content" className="mb-1 block text-sm font-medium">
             Content *
           </label>
-          <Editor
-            content={content}
-            onChange={setContent}
-            placeholder="Write your blog post content..."
-          />
+          <Editor content={content} onChange={setContent} placeholder="Edit your blog post content..." />
         </div>
 
         <div>
@@ -181,7 +173,7 @@ export default function CreatePostPage() {
             disabled={submitting}
             className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60"
           >
-            {submitting ? 'Creating…' : 'Create Post'}
+            {submitting ? 'Saving…' : 'Save Changes'}
           </button>
           <button
             type="button"
@@ -195,3 +187,5 @@ export default function CreatePostPage() {
     </div>
   )
 }
+
+

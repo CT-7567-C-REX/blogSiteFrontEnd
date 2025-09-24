@@ -8,7 +8,7 @@ import MobileNav from './MobileNav'
 import ThemeSwitch from './ThemeSwitch'
 import SearchButton from './SearchButton'
 import { useEffect, useRef, useState } from 'react'
-import { accessToken } from 'services/session'
+import { accessToken, currentUsername } from 'services/session'
 import { logout as logoutRequest } from 'services/auth/routes'
 import { useRouter } from 'next/navigation'
 
@@ -20,12 +20,17 @@ const Header = () => {
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
+  const [username, setUsername] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     setIsAuthenticated(!!accessToken())
-    const onChange = () => setIsAuthenticated(!!accessToken())
+    setUsername(currentUsername())
+    const onChange = () => {
+      setIsAuthenticated(!!accessToken())
+      setUsername(currentUsername())
+    }
     window.addEventListener('session-changed', onChange)
     return () => window.removeEventListener('session-changed', onChange)
   }, [])
@@ -125,11 +130,11 @@ const Header = () => {
             {menuOpen && (
               <div className="absolute right-0 mt-2 w-44 rounded-md border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-900">
                 <Link
-                  href="/profile"
+                  href={username ? `/profile/${username}` : '/profile'}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Profile
+                  My Profile
                 </Link>
                 <button
                   onClick={handleLogout}

@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { getProfile } from 'services/user/routes'
+import { accessToken } from 'services/session'
 import Link from 'next/link'
 import ClickableProfilePicture from '@/components/ClickableProfilePicture'
 import ProfilePictureModal from '@/components/ProfilePictureModal'
@@ -28,18 +30,30 @@ type Profile = {
 }
 
 export default function ProfilePage() {
+  const router = useRouter()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string>('')
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   useEffect(() => {
+    // Redirect if no token
+    const token = accessToken()
+    if (!token) {
+      router.push('/login')
+      return
+    }
     const run = async () => {
       try {
         const data = await getProfile()
         setProfile(data)
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to load profile')
+        const status = err?.response?.status
+        if (status === 401) {
+          router.push('/login')
+          return
+        }
+        setError(err?.response?.data?.message || 'Failed to load profile')
       } finally {
         setLoading(false)
       }

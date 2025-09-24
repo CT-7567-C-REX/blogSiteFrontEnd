@@ -76,7 +76,7 @@ client.interceptors.request.use(
       } catch (err) {
         console.error('Early refresh failed', err)
         clearSession()
-        window.location.href = '/signin'
+        window.location.href = '/login'
         return Promise.reject(err)
       } finally {
         isRefreshing = false
@@ -138,7 +138,7 @@ client.interceptors.response.use(
       } catch (refreshErr) {
         processQueue(refreshErr, null)
         clearSession()
-        window.location.href = '/signin'
+        window.location.href = '/login'
         return Promise.reject(refreshErr)
       } finally {
         isRefreshing = false

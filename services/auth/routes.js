@@ -14,9 +14,9 @@ export async function login(emailOrUsername, password) {
     password,
   })
   const data = res.data
-  const { access_token, refresh_token } = data || {}
+  const { access_token, refresh_token, user } = data || {}
   if (access_token && refresh_token) {
-    setSession({ accessToken: access_token, refreshToken: refresh_token })
+    setSession({ accessToken: access_token, refreshToken: refresh_token, user })
   }
   return Boolean(access_token && refresh_token)
 }
@@ -39,9 +39,9 @@ export async function register( fullName, username, email, password, passwordAga
     passwordAgain,
   })
   const data = res.data
-  const { access_token, refresh_token } = data || {}
+  const { access_token, refresh_token, user } = data || {}
   if (access_token && refresh_token) {
-    setSession({ accessToken: access_token, refreshToken: refresh_token })
+    setSession({ accessToken: access_token, refreshToken: refresh_token, user })
   }
   return Boolean(access_token && refresh_token)
 }

@@ -4,22 +4,26 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { getProfileByUsername } from 'services/user/routes'
-
-type Post = {
-  id: string
-  title: string
-  slug: string
-  created_at?: string
-}
+import { getUserPostsByUsername } from 'services/user/routes'
 
 type Profile = {
   id: string
   username: string
   fullName: string
-  email?: string
+  email?: string | null
+  bio?: string | null
+  about?: string | null
   profile_image_url?: string
   created_at: string
-  posts?: Post[]
+  role?: string
+  contact_info_visible?: boolean | null
+  verified?: boolean
+  followers_count?: number
+  following_count?: number
+  blog_posts_count?: number
+  comments_count?: number
+  blocked_users_count?: number | null
+  saved_posts_count?: number | null
 }
 
 export default function PublicProfilePage() {
@@ -27,6 +31,10 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [posts, setPosts] = useState<any[]>([])
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     if (!username) return
@@ -47,6 +55,25 @@ export default function PublicProfilePage() {
       mounted = false
     }
   }, [username])
+
+  useEffect(() => {
+    if (!username) return
+    let mounted = true
+    ;(async () => {
+      try {
+        const data = await getUserPostsByUsername(username, { page, per_page: perPage })
+        if (!mounted) return
+        setPosts(data?.posts || [])
+        const p = data?.pageData
+        if (p) setTotalPages(p.pages || 1)
+      } catch (err) {
+        // keep silent for posts
+      }
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [username, page, perPage])
 
   if (loading) return <div className="mx-auto mt-10 max-w-3xl px-4">Loading...</div>
   if (error) return <div className="mx-auto mt-10 max-w-3xl px-4 text-red-500">{error}</div>
@@ -82,11 +109,11 @@ export default function PublicProfilePage() {
 
       <div className="mt-10">
         <h2 className="mb-4 text-xl font-semibold">Posts</h2>
-        {(!profile.posts || profile.posts.length === 0) && (
+        {posts.length === 0 && (
           <div className="text-gray-600">No posts yet.</div>
         )}
         <ul className="space-y-3">
-          {(profile.posts || []).map((post) => (
+          {posts.map((post) => (
             <li key={post.id} className="rounded border p-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -109,6 +136,27 @@ export default function PublicProfilePage() {
             </li>
           ))}
         </ul>
+        {totalPages > 1 && (
+          <div className="mt-4 flex items-center justify-between">
+            <button
+              type="button"
+              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+            >
+              Previous
+            </button>
+            <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
+            <button
+              type="button"
+              className="rounded-md border px-3 py-1 text-sm disabled:opacity-50"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

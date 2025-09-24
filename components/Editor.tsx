@@ -48,6 +48,7 @@ const MenuButton = ({
   label?: string
 }) => (
   <button
+    type="button"
     onClick={onClick}
     title={label}
     className={`rounded-md border p-2 transition ${
@@ -97,6 +98,16 @@ export default function Editor({
       onChange?.(editor.getHTML())
     },
   })
+
+  // Sync external content prop into editor when it changes (e.g., mock fill button)
+  useEffect(() => {
+    if (!editor) return
+    const incoming = content || ''
+    // Avoid unnecessary updates to prevent cursor jumps
+    if (incoming !== editor.getHTML()) {
+      editor.commands.setContent(incoming, { emitUpdate: false })
+    }
+  }, [content, editor])
 
   const addImageFromFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
