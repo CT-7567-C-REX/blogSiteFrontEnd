@@ -57,9 +57,6 @@ export default function CreatePostPage() {
       e.preventDefault()
       setError(null)
   
-      console.log('title', title)
-      console.log('meta description onSubmit:', metaDescription)
-  
       if (!title || !content) {
         setError('Title and Content are required')
         return
@@ -72,7 +69,7 @@ export default function CreatePostPage() {
           tags,
           featured_image: featuredImage || undefined,
           featured_image_alt_text: featuredImageAlt || undefined,
-          meta_description: metaDescription || undefined, // ✅ will now work
+          meta_description: metaDescription || undefined,
         })
         const slug = created?.slug || created?.post?.slug
         if (slug) router.push(`/blog/${slug}`)
