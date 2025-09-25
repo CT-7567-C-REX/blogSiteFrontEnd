@@ -14,6 +14,7 @@ export default function EditPostPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tagsInput, setTagsInput] = useState('')
+  const [metaDescription, setMetaDescription] = useState('')
   const [featuredImage, setFeaturedImage] = useState<File | null>(null)
   const [featuredImageAlt, setFeaturedImageAlt] = useState('')
   const [featuredPreviewUrl, setFeaturedPreviewUrl] = useState<string | null>(null)
@@ -44,6 +45,7 @@ export default function EditPostPage() {
         setContent(p.content || '')
         setFeaturedPreviewUrl(p.featured_image_url || null)
         setFeaturedImageAlt(p.featured_image_alt_text || '')
+        setMetaDescription(p.meta_description || '')
         const tagNames = Array.isArray(p.tags) ? p.tags.map((t: any) => t?.name).filter(Boolean) : []
         setTagsInput(tagNames.join(', '))
       } catch (err: any) {
@@ -75,6 +77,7 @@ export default function EditPostPage() {
           tags,
           featured_image: featuredImage || undefined,
           featured_image_alt_text: featuredImageAlt || undefined,
+          meta_description: metaDescription || undefined,
         })
         const slug = updated?.slug || updated?.post?.slug || params.id
         router.push(`/blog/${slug}`)
@@ -131,6 +134,21 @@ export default function EditPostPage() {
           </div>
         </div>
 
+        <div>
+          <label htmlFor="meta_description" className="mb-1 block text-sm font-medium dark:text-gray-300">
+            Description (SEO)
+          </label>
+          <textarea
+            id="meta_description"
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
+            placeholder="Short summary for search engines and social sharing"
+            rows={3}
+            maxLength={300}
+          />
+          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">Up to 300 characters</div>
+        </div>
         <div>
           <label htmlFor="title" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Title *

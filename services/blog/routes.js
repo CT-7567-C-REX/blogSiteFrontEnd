@@ -2,14 +2,13 @@ import client from '../axios'
 import { endpoints } from '../endpoints'
 
 /**
- * Create a new blog post (multipart/form-data)
  * @param {Object} params
  * @param {string} params.title
  * @param {string} params.content
+ * @param {string[]=} params.tags
  * @param {File=} params.featured_image
  * @param {string=} params.featured_image_alt_text
- * @param {string[]=} params.tags
- * @returns {Promise<any>} server response data
+ * @param {string=} params.meta_description
  */
 export async function createPost(params) {
   const {
@@ -17,12 +16,14 @@ export async function createPost(params) {
     content,
     tags,
     featured_image,
-    featured_image_alt_text
+    featured_image_alt_text,
+    meta_description,
   } = params || {}
 
   const formData = new FormData()
   if (title != null) formData.append('title', title)
   if (content != null) formData.append('content', content)
+  if (meta_description != null) formData.append('meta_description', meta_description)
   if (featured_image != null) formData.append('featured_image', featured_image)
   if (featured_image_alt_text != null)
     formData.append('featured_image_alt_text', featured_image_alt_text)
@@ -71,11 +72,22 @@ export const blog = { createPost, getAllPosts, getPostBySlug }
  * @param {string=} params.featured_image_alt_text
  * @param {string[]=} params.tags
  */
+/**
+ * @param {Object} params
+ * @param {string} params.post_id
+ * @param {string=} params.title
+ * @param {string=} params.content
+ * @param {string[]=} params.tags
+ * @param {File=} params.featured_image
+ * @param {string=} params.featured_image_alt_text
+ * @param {string=} params.meta_description
+ */
 export async function updatePost(params) {
-  const { post_id, title, content, tags, featured_image, featured_image_alt_text } = params || {}
+  const { post_id, title, content, tags, featured_image, featured_image_alt_text, meta_description } = params || {}
   const formData = new FormData()
   if (title != null) formData.append('title', title)
   if (content != null) formData.append('content', content)
+  if (meta_description != null) formData.append('meta_description', meta_description)
   if (featured_image != null) formData.append('featured_image', featured_image)
   if (featured_image_alt_text != null) formData.append('featured_image_alt_text', featured_image_alt_text)
   if (Array.isArray(tags)) {
@@ -85,9 +97,7 @@ export async function updatePost(params) {
       }
     })
   }
-  const res = await client.post(endpoints.blogPostEdit(post_id), formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const res = await client.post(endpoints.blogPostEdit(post_id), formData)
   return res.data
 }
 

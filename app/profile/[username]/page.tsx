@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import PostListItem from '@/components/PostListItem'
 import { getProfileByUsername } from 'services/user/routes'
 import { getUserPostsByUsername } from 'services/user/routes'
 
@@ -147,28 +148,17 @@ export default function PublicProfilePage() {
         {posts.length === 0 && (
           <div className="text-gray-600">No posts yet.</div>
         )}
-        <ul className="space-y-3">
+        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {posts.map((post) => (
-            <li key={post.id} className="rounded border p-3">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <Link href={`/blog/${post.slug}`} className="text-lg font-medium hover:underline">
-                    {post.title}
-                  </Link>
-                  {post.created_at && (
-                    <div className="text-xs text-gray-500">
-                      {new Date(post.created_at).toLocaleString()}
-                    </div>
-                  )}
-                </div>
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="rounded-md border px-3 py-1 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  View
-                </Link>
-              </div>
-            </li>
+            <PostListItem
+              key={post.id}
+              slug={post.slug}
+              title={post.title}
+              date={post.created_at}
+              summary={post.summary}
+              tags={(post.tags || []).map((t: any) => t?.name)}
+              featured_image_url={post.featured_image_url}
+            />
           ))}
         </ul>
         {totalPages > 1 && (

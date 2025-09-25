@@ -12,6 +12,7 @@ export default function CreatePostPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tagsInput, setTagsInput] = useState('')
+  const [metaDescription, setMetaDescription] = useState('')
   const [featuredImage, setFeaturedImage] = useState<File | null>(null)
   const [featuredImageAlt, setFeaturedImageAlt] = useState('')
 
@@ -55,6 +56,10 @@ export default function CreatePostPage() {
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       setError(null)
+  
+      console.log('title', title)
+      console.log('meta description onSubmit:', metaDescription)
+  
       if (!title || !content) {
         setError('Title and Content are required')
         return
@@ -67,6 +72,7 @@ export default function CreatePostPage() {
           tags,
           featured_image: featuredImage || undefined,
           featured_image_alt_text: featuredImageAlt || undefined,
+          meta_description: metaDescription || undefined, // ✅ will now work
         })
         const slug = created?.slug || created?.post?.slug
         if (slug) router.push(`/blog/${slug}`)
@@ -85,6 +91,9 @@ export default function CreatePostPage() {
       content,
       tags,
       router,
+      featuredImage,
+      featuredImageAlt,
+      metaDescription,
     ]
   )
 
@@ -119,6 +128,23 @@ export default function CreatePostPage() {
             placeholder="Post title"
             required
           />
+        </div>
+
+        <div>
+          <label htmlFor="meta_description" className="mb-1 block text-sm font-medium dark:text-gray-300">
+            Description (SEO)
+          </label>
+          <input
+            id="meta_description"
+            type="text"
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value) }
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
+            placeholder="Post title"
+            maxLength={300}
+            required
+          />
+          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">Up to 300 characters</div>
         </div>
 
         <div>
