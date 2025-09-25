@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Editor from '@/components/Editor'
 import ImageUploader from '@/components/ImageUploader'
-import { getPostBySlug, updatePost } from 'services/blog/routes'
+import { getPostBySlug, updatePost, deletePost } from 'services/blog/routes'
 
 export default function EditPostPage() {
   const router = useRouter()
@@ -181,6 +181,21 @@ export default function EditPostPage() {
             className="rounded-md border border-gray-300 px-4 py-2 hover:bg-gray-50"
           >
             Cancel
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return
+              try {
+                await deletePost(params.id)
+                router.push('/allPosts')
+              } catch (e) {
+                alert('Failed to delete post')
+              }
+            }}
+            className="ml-auto rounded-md border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50"
+          >
+            Delete
           </button>
         </div>
       </form>

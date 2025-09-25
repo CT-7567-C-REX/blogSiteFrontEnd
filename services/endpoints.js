@@ -10,6 +10,7 @@ const endpoints = {
     updateProfilePicture: `${API_BASE_URL}/users/updateProfilePic`,
     blogPostsCreate: `${API_BASE_URL}/blogPosts/create`,
     blogPostEdit: (postId) => `${API_BASE_URL}/blogPosts/edit/${postId}`,
+    blogPostDelete: (postId) => `${API_BASE_URL}/blogPosts/delete/${postId}`,
     blogPostsAll: `${API_BASE_URL}/blogPosts/allPosts`,
     blogPostBySlug: (slug) => `${API_BASE_URL}/blogPosts/slug/${slug}`,
     deactivateAccount: (token) => `${API_BASE_URL}/auth/deactivate/${token}`,

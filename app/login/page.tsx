@@ -35,23 +35,23 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <div className="text-red-500">{error}</div>}
         <div>
-          <label htmlFor="emailOrUsername" className="mb-1 block font-medium">Email or Username</label>
+          <label htmlFor="emailOrUsername" className="mb-1 block font-medium dark:text-gray-300">Email or Username</label>
           <input
             id="emailOrUsername"
             type="text"
-            className="w-full rounded border border-gray-300 px-3 py-2"
+            className="w-full rounded border border-gray-300 px-3 py-2 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
             value={emailOrUsername}
             onChange={(e) => setEmailOrUsername(e.target.value)}
             required
           />
         </div>
         <div>
-          <label htmlFor="password" className="mb-1 block font-medium">Password</label>
+          <label htmlFor="password" className="mb-1 block font-medium dark:text-gray-300">Password</label>
           <div className="relative">
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
-              className="w-full rounded border border-gray-300 px-3 py-2 pr-10"
+              className="w-full rounded border border-gray-300 px-3 py-2 pr-10 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -60,7 +60,7 @@ export default function LoginPage() {
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-500 hover:text-gray-700 focus:outline-none"
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-500 hover:text-gray-700 focus:outline-none dark:text-gray-400 dark:hover:text-gray-200"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>

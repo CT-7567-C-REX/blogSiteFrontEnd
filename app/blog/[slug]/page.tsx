@@ -87,7 +87,7 @@ export default function BlogPostPage() {
         </p>
       )}
       <div
-        className="prose max-w-none"
+        className="prose max-w-none dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: post.content || '' }}
       />
       {post.author?.username && (

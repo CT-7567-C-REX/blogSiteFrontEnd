@@ -243,7 +243,7 @@ export default function Editor({
       </div>
 
       {/* Editor area */}
-      <div className="relative prose min-h-[300px] max-w-none p-4 focus:ring-0 focus:outline-none">
+      <div className="relative prose min-h-[300px] max-w-none p-4 focus:ring-0 focus:outline-none dark:prose-invert">
         {showPlaceholder && (
           <div className="pointer-events-none absolute left-4 top-4 select-none text-gray-400">
             {placeholder}

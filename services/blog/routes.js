@@ -93,4 +93,15 @@ export async function updatePost(params) {
 
 export const edit = { updatePost }
 
+/**
+ * Delete a blog post by id
+ * @param {string} post_id
+ */
+export async function deletePost(post_id) {
+  const res = await client.delete(endpoints.blogPostDelete(post_id))
+  return res.data
+}
+
+export const remove = { deletePost }
+
 

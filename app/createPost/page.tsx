@@ -107,7 +107,7 @@ export default function CreatePostPage() {
           >
             Mock data ekle (kediler)
           </button>
-          <label htmlFor="title" className="mb-1 block text-sm font-medium">
+          <label htmlFor="title" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Title *
           </label>
           <input
@@ -115,7 +115,7 @@ export default function CreatePostPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
             placeholder="Post title"
             required
           />
@@ -151,7 +151,7 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label htmlFor="content" className="mb-1 block text-sm font-medium">
+          <label htmlFor="content" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Content *
           </label>
           <Editor
@@ -162,7 +162,7 @@ export default function CreatePostPage() {
         </div>
 
         <div>
-          <label htmlFor="tags" className="mb-1 block text-sm font-medium">
+          <label htmlFor="tags" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Tags
           </label>
           <input
@@ -170,7 +170,7 @@ export default function CreatePostPage() {
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
             placeholder="Comma separated tags"
           />
         </div>

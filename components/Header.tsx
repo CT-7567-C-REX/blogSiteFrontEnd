@@ -56,7 +56,7 @@ const Header = () => {
     try {
       await logoutRequest()
       setMenuOpen(false)
-      router.push('/')
+      router.push('/login')
     } catch {
       // ignore
     }
@@ -134,7 +134,14 @@ const Header = () => {
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                   onClick={() => setMenuOpen(false)}
                 >
-                  My Profile
+                  Profile
+                </Link>
+                <Link
+                  href="/settings"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Settings
                 </Link>
                 <button
                   onClick={handleLogout}

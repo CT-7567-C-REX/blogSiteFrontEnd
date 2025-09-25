@@ -82,38 +82,64 @@ export default function PublicProfilePage() {
 
   return (
     <div className="mx-auto mt-10 max-w-3xl px-4">
-      <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="mb-6 flex items-start gap-4">
         {profile.profile_image_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={profile.profile_image_url}
             alt={profile.username}
-            className="h-16 w-16 rounded-full object-cover"
+            className="h-20 w-20 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="h-8 w-8"
+              className="h-10 w-10"
             >
               <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-4.418 0-8 2.239-8 5v1h16v-1c0-2.761-3.582-5-8-5z" />
             </svg>
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold">{profile.fullName}</h1>
-          <p className="text-gray-600 dark:text-gray-300">@{profile.username}</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h1 className="truncate text-2xl font-bold">{profile.fullName}</h1>
+                {profile.verified && (
+                  <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Verified</span>
+                )}
+              </div>
+              <div className="mt-1 text-sm text-gray-600 dark:text-gray-300">@{profile.username}</div>
+            </div>
+            {profile.is_own_profile && (
+              <Link
+                href={`/settings`}
+                className="rounded-md border px-3 py-1 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                Edit Profile
+              </Link>
+            )}
+          </div>
+          <div className="mt-3 grid grid-cols-3 gap-3 sm:max-w-md">
+            <div className="rounded border p-2 text-center">
+              <div className="text-base font-semibold">{profile.followers_count ?? 0}</div>
+              <div className="text-xs text-gray-500">Followers</div>
+            </div>
+            <div className="rounded border p-2 text-center">
+              <div className="text-base font-semibold">{profile.following_count ?? 0}</div>
+              <div className="text-xs text-gray-500">Following</div>
+            </div>
+            <div className="rounded border p-2 text-center">
+              <div className="text-base font-semibold">{profile.blog_posts_count ?? 0}</div>
+              <div className="text-xs text-gray-500">Posts</div>
+            </div>
+          </div>
+          {profile.bio && (
+            <p className="mt-3 whitespace-pre-wrap text-gray-800 dark:text-gray-200">{profile.bio}</p>
+          )}
         </div>
-        {profile.is_own_profile && (
-          <Link
-            href={`/profile/${profile.username}/edit`}
-            className="rounded-md border px-3 py-1 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
-          >
-            Edit Profile
-          </Link>
-        )}
       </div>
 
       <div className="mt-10">
