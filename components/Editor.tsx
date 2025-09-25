@@ -54,7 +54,7 @@ const MenuButton = ({
     className={`rounded-md border p-2 transition ${
       isActive
         ? 'border-orange-600 bg-orange-500 text-white'
-        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
+        : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
     }`}
   >
     <Icon className="h-4 w-4" />
@@ -134,9 +134,9 @@ export default function Editor({
   const showPlaceholder = editor.isEmpty && !editor.isFocused
 
   return (
-    <div className="rounded-xl border bg-white shadow-md">
+    <div className="rounded-xl border bg-white shadow-md dark:border-gray-700 dark:bg-gray-900">
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-2 border-b bg-gray-50 p-3">
+      <div className="flex flex-wrap gap-2 border-b bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800">
         {/* Headings */}
         <MenuButton
           onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}

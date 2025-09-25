@@ -103,7 +103,7 @@ export default function EditPostPage() {
         )}
 
         <div>
-          <label className="mb-1 block text-sm font-medium">Featured image</label>
+          <label className="mb-1 block text-sm font-medium dark:text-gray-300">Featured image</label>
           <ImageUploader
             selectedImage={featuredImage}
             previewUrl={featuredPreviewUrl}
@@ -117,7 +117,7 @@ export default function EditPostPage() {
             maxSize={8}
           />
           <div className="mt-3">
-            <label htmlFor="featured-alt" className="mb-1 block text-sm font-medium">
+            <label htmlFor="featured-alt" className="mb-1 block text-sm font-medium dark:text-gray-300">
               Featured image alt text
             </label>
             <input
@@ -125,14 +125,14 @@ export default function EditPostPage() {
               type="text"
               value={featuredImageAlt}
               onChange={(e) => setFeaturedImageAlt(e.target.value)}
-              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
               placeholder="Describe the featured image for accessibility"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="title" className="mb-1 block text-sm font-medium">
+          <label htmlFor="title" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Title *
           </label>
           <input
@@ -140,21 +140,21 @@ export default function EditPostPage() {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
             placeholder="Post title"
             required
           />
         </div>
 
         <div>
-          <label htmlFor="content" className="mb-1 block text-sm font-medium">
+          <label htmlFor="content" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Content *
           </label>
           <Editor content={content} onChange={setContent} placeholder="Edit your blog post content..." />
         </div>
 
         <div>
-          <label htmlFor="tags" className="mb-1 block text-sm font-medium">
+          <label htmlFor="tags" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Tags
           </label>
           <input
@@ -162,7 +162,7 @@ export default function EditPostPage() {
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400 dark:border-gray-700"
             placeholder="Comma separated tags"
           />
         </div>
