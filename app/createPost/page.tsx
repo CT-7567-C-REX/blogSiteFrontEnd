@@ -5,6 +5,40 @@ import { useRouter } from 'next/navigation'
 import { createPost } from 'services/blog/routes'
 import Editor from '@/components/Editor'
 import ImageUploader from '@/components/ImageUploader'
+import { v4 as uuidv4 } from 'uuid' // install uuid if not present
+
+// Utility to extract base64 images and replace with filenames
+function extractImagesFromContent(html: string) {
+  const imgRegex = /<img[^>]+src=["'](data:image\/[^"']+)["'][^>]*>/g
+  let match
+  let images: File[] = []
+  let newHtml = html
+  let idx = 0
+
+  while ((match = imgRegex.exec(html))) {
+    const base64 = match[1]
+    // Get extension
+    const extMatch = /^data:image\/(\w+);base64,/.exec(base64)
+    const ext = extMatch ? extMatch[1] : 'png'
+    const filename = `content_image_${uuidv4()}.${ext}`
+
+    // Convert base64 to File
+    const arr = base64.split(',')
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png'
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) u8arr[n] = bstr.charCodeAt(n)
+    const file = new File([u8arr], filename, { type: mime })
+    images.push(file)
+
+    // Replace base64 src with filename in HTML
+    newHtml = newHtml.replace(base64, filename)
+    idx++
+  }
+
+  return { html: newHtml, images }
+}
 
 export default function CreatePostPage() {
   const router = useRouter()
@@ -28,48 +62,28 @@ export default function CreatePostPage() {
     [tagsInput]
   )
 
-  const fillWithMockData = useCallback(() => {
-    setTitle('Kediler: Evimizin Zarif Dostları')
-    setContent(
-      `
-      <h2>Kediler Hakkında</h2>
-      <p>Kediler binlerce yıldır insanlarla birlikte yaşayan, bağımsız ama bir o kadar da sevgi dolu canlılardır. Sessiz adımları, meraklı bakışları ve oyuncu tavırlarıyla hayatımıza neşe katarlar.</p>
-      <h3>Bakım İpuçları</h3>
-      <ul>
-        <li>Dengeli bir beslenme düzeni oluşturun.</li>
-        <li>Temiz suyu her zaman erişilebilir kılın.</li>
-        <li>Düzenli tarama ve tırnak bakımı yapın.</li>
-        <li>Kum kabını temiz tutun.</li>
-      </ul>
-      <p>Kedinizle oyun oynamak, onun hem fiziksel hem de zihinsel sağlığı için çok önemlidir. Basit bir tüy oyuncak bile saatlerce eğlence sağlayabilir.</p>
-      <blockquote>"Kediler asla sıradan değildir; her biri ayrı bir karaktere sahiptir."</blockquote>
-      <p>Yeni bir kedi sahiplenecekseniz sabırlı olun ve onun yeni ortamına alışması için zaman tanıyın.</p>
-      `
-    )
-    setTagsInput('kediler, evcil hayvanlar, bakım')
-    if (featuredImage == null) {
-      setFeaturedImageAlt('Pencere kenarında oturan meraklı bir kedi')
-    }
-  }, [featuredImage])
-
   const onSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       setError(null)
-  
+
       if (!title || !content) {
         setError('Title and Content are required')
         return
       }
       setSubmitting(true)
       try {
+        // Extract images from content
+        const { html: processedContent, images: contentImages } = extractImagesFromContent(content)
+
         const created = await createPost({
           title,
-          content,
+          content: processedContent,
           tags,
           featured_image: featuredImage || undefined,
           featured_image_alt_text: featuredImageAlt || undefined,
           meta_description: metaDescription || undefined,
+          content_images: contentImages, // pass array of images
         })
         const slug = created?.slug || created?.post?.slug
         if (slug) router.push(`/blog/${slug}`)
@@ -105,14 +119,6 @@ export default function CreatePostPage() {
         )}
 
         <div>
-        <button
-            type="button"
-            onClick={fillWithMockData}
-            className="rounded-md border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50"
-            title="Mock data ile doldur"
-          >
-            Mock data ekle (kediler)
-          </button>
           <label htmlFor="title" className="mb-1 block text-sm font-medium dark:text-gray-300">
             Title *
           </label>

@@ -9,6 +9,7 @@ import { endpoints } from '../endpoints'
  * @param {File=} params.featured_image
  * @param {string=} params.featured_image_alt_text
  * @param {string=} params.meta_description
+ * @param {File[]=} params.content_images
  */
 export async function createPost(params) {
   const {
@@ -18,6 +19,7 @@ export async function createPost(params) {
     featured_image,
     featured_image_alt_text,
     meta_description,
+    content_images,
   } = params || {}
 
   const formData = new FormData()
@@ -36,6 +38,13 @@ export async function createPost(params) {
     })
   }
 
+  // Add content images
+  if (Array.isArray(content_images)) {
+    content_images.forEach((img) => {
+      formData.append('content_images', img)
+    })
+  }
+
   const res = await client.post(endpoints.blogPostsCreate, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
@@ -48,7 +57,7 @@ export async function getAllPosts() {
 }
 
 export default { createPost, getAllPosts }
- 
+
 /**
  * Get a single blog post by its slug
  * @param {string} slug
@@ -68,22 +77,24 @@ export const blog = { createPost, getAllPosts, getPostBySlug }
  * @param {string} params.post_id
  * @param {string=} params.title
  * @param {string=} params.content
- * @param {File=} params.featured_image
- * @param {string=} params.featured_image_alt_text
- * @param {string[]=} params.tags
- */
-/**
- * @param {Object} params
- * @param {string} params.post_id
- * @param {string=} params.title
- * @param {string=} params.content
  * @param {string[]=} params.tags
  * @param {File=} params.featured_image
  * @param {string=} params.featured_image_alt_text
  * @param {string=} params.meta_description
+ * @param {File[]=} params.content_images
  */
 export async function updatePost(params) {
-  const { post_id, title, content, tags, featured_image, featured_image_alt_text, meta_description } = params || {}
+  const {
+    post_id,
+    title,
+    content,
+    tags,
+    featured_image,
+    featured_image_alt_text,
+    meta_description,
+    content_images,
+  } = params || {}
+
   const formData = new FormData()
   if (title != null) formData.append('title', title)
   if (content != null) formData.append('content', content)
@@ -97,7 +108,15 @@ export async function updatePost(params) {
       }
     })
   }
-  const res = await client.post(endpoints.blogPostEdit(post_id), formData)
+  // Add content images
+  if (Array.isArray(content_images)) {
+    content_images.forEach((img) => {
+      formData.append('content_images', img)
+    })
+  }
+  const res = await client.post(endpoints.blogPostEdit(post_id), formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
   return res.data
 }
 

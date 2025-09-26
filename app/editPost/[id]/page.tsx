@@ -5,6 +5,76 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Editor from '@/components/Editor'
 import ImageUploader from '@/components/ImageUploader'
 import { getPostBySlug, updatePost, deletePost } from 'services/blog/routes'
+import { v4 as uuidv4 } from 'uuid'
+
+// Utility: Extract both base64 and URL images, convert to File, replace src with filename
+async function extractImagesFromContentAll(html: string) {
+  // Regex for base64 images
+  const base64Regex = /<img[^>]+src=["'](data:image\/[^"']+)["'][^>]*>/g
+  // Regex for URL images (http/https)
+  const urlRegex = /<img[^>]+src=["'](https?:\/\/[^"']+)["'][^>]*>/g
+
+  let match
+  let images: File[] = []
+  let newHtml = html
+
+  // 1. Handle base64 images
+  while ((match = base64Regex.exec(html))) {
+    const base64 = match[1]
+    const extMatch = /^data:image\/(\w+);base64,/.exec(base64)
+    const ext = extMatch ? extMatch[1] : 'png'
+    const filename = `content_image_${uuidv4()}.${ext}`
+
+    // Convert base64 to File
+    const arr = base64.split(',')
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/png'
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) u8arr[n] = bstr.charCodeAt(n)
+    const file = new File([u8arr], filename, { type: mime })
+    images.push(file)
+
+    // Replace base64 src with filename in HTML
+    newHtml = newHtml.replace(base64, filename)
+  }
+
+  // 2. Handle URL images (fetch and convert to File)
+  // Use a Set to avoid duplicate URLs
+  const urlSet = new Set<string>()
+  let urlMatch
+  while ((urlMatch = urlRegex.exec(html))) {
+    urlSet.add(urlMatch[1])
+  }
+
+  const urlPromises = Array.from(urlSet).map(async (url) => {
+    // Guess extension from URL or fallback to jpg
+    const extMatch = url.match(/\.(\w+)(?:\?|$)/)
+    const ext = extMatch ? extMatch[1] : 'jpg'
+    const filename = `content_image_${uuidv4()}.${ext}`
+
+    // Fetch image and convert to File
+    const res = await fetch(url)
+    const blob = await res.blob()
+    const file = new File([blob], filename, { type: blob.type || `image/${ext}` })
+    images.push(file)
+    // Replace all occurrences of this url in HTML with filename
+    newHtml = newHtml.replace(new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), filename)
+  })
+
+  await Promise.all(urlPromises)
+  return { html: newHtml, images }
+}
+
+// Utility: Download a featured image from a URL and return a File object
+async function downloadFeaturedImage(url: string): Promise<File> {
+  const extMatch = url.match(/\.(\w+)(?:\?|$)/)
+  const ext = extMatch ? extMatch[1] : 'jpg'
+  const filename = `featured_image_${uuidv4()}.${ext}`
+  const res = await fetch(url)
+  const blob = await res.blob()
+  return new File([blob], filename, { type: blob.type || `image/${ext}` })
+}
 
 export default function EditPostPage() {
   const router = useRouter()
@@ -70,14 +140,24 @@ export default function EditPostPage() {
       }
       setSubmitting(true)
       try {
+        // Extract images (base64 and URLs), convert to File, and replace src in HTML
+        const { html: processedContent, images: contentImages } = await extractImagesFromContentAll(content)
+
+        // Download featured image if not changed and previewUrl exists
+        let featuredImageToSend: File | undefined = featuredImage || undefined
+        if (!featuredImage && featuredPreviewUrl) {
+          featuredImageToSend = await downloadFeaturedImage(featuredPreviewUrl)
+        }
+
         const updated = await updatePost({
           post_id: params.id,
           title,
-          content,
+          content: processedContent,
           tags,
-          featured_image: featuredImage || undefined,
+          featured_image: featuredImageToSend,
           featured_image_alt_text: featuredImageAlt || undefined,
           meta_description: metaDescription || undefined,
+          content_images: contentImages, // include content images
         })
         const slug = updated?.slug || updated?.post?.slug || params.id
         router.push(`/blog/${slug}`)
@@ -90,7 +170,7 @@ export default function EditPostPage() {
         setSubmitting(false)
       }
     },
-    [params.id, title, content, tags, featuredImage, featuredImageAlt, router]
+    [params.id, title, content, tags, featuredImage, featuredPreviewUrl, featuredImageAlt, metaDescription, router]
   )
 
   if (loading) return <div className="mx-auto max-w-3xl px-4 py-8">Loading…</div>
